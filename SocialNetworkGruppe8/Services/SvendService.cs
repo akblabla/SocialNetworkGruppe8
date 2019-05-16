@@ -4,48 +4,56 @@ using System.Linq;
 using SocialNetworkGruppe8.Models;
 using MongoDB.Driver;
 
-namespace ConsoleApp2.Services
+namespace SocialNetworkGruppe8.Services
 {
-    class FeedService
+    public class SvendService
     {
-        private readonly IMongoCollection<Feed> _feed;
+        private IMongoCollection<User> _users;
+        private IMongoCollection<Comment> _comments;
+        private IMongoCollection<Post> _posts;
+        private IMongoDatabase _database;
 
-        public FeedService()
+        public SvendService()
         {
             var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("FeedDb");
-            _feed = database.GetCollection<Feed>("Feed");
+            _database = client.GetDatabase("SvendDb");
         }
 
-        public List<Feed> Get()
+        // view comments for post
+
+        public List<User> Get() // this is just made as a test. we should have this
         {
-            return _feed.Find(book => true).ToList();
+            return _users.Find(book => true).ToList();
         }
 
-        public Feed Get(string id)
+        //public Feed Get(string id)
+        //{
+        //    return _feed.Find<Feed>(feed=> feed.Id == id).FirstOrDefault();
+        //}
+
+        public User Create(User user)
         {
-            return _feed.Find<Feed>(feed=> feed.Id == id).FirstOrDefault();
+            if (_users == null)
+            {
+                _users = _database.GetCollection<User>("Users");
+            }
+            _users.InsertOne(user);
+            return user;
         }
 
-        public Feed Create(Feed feed)
-        {
-            _feed.InsertOne(feed);
-            return feed;
-        }
+        //public void Update(string id, Feed feedIn)
+        //{
+        //    _feed.ReplaceOne(feed => feed.Id == id, feedIn);
+        //}
 
-        public void Update(string id, Feed feedIn)
-        {
-            _feed.ReplaceOne(feed => feed.Id == id, feedIn);
-        }
+        //public void Remove(Feed feedIn)
+        //{
+        //    _feed.DeleteOne(feed => feed.Id == feedIn.Id);
+        //}
 
-        public void Remove(Feed feedIn)
-        {
-            _feed.DeleteOne(feed => feed.Id == feedIn.Id);
-        }
-
-        public void Remove(string id)
-        {
-            _feed.DeleteOne(feed => feed.Id == id);
-        }
+        //public void Remove(string id)
+        //{
+        //    _feed.DeleteOne(feed => feed.Id == id);
+        //}
     }
 }

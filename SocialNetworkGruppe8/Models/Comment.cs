@@ -4,8 +4,11 @@ using System.Text;
 
 namespace SocialNetworkGruppe8.Models
 {
-    class Comment
+    public class Comment
     {
-        public string text { get; set; }
+        public string Id { get; set; }
+        public string PostId { get; set; }
+        public string Text { get; set; }
+
     }
 }

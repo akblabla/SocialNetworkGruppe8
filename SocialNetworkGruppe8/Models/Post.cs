@@ -4,8 +4,11 @@ using System.Text;
 using SocialNetworkGruppe8.Models;
 namespace SocialNetworkGruppe8.Models
 {
-    class Post
+    public class Post
     {
-        Queue<Comment> comments { get; set; }
+        public string Id { get; set; }
+        public string UserId { get; set; }
+        public string Text { get; set; }
+        public bool IsPublic { get; set; }
     }
 }
