@@ -15,11 +15,12 @@ namespace SocialNetworkGruppe8.Services
 
         public SvendService()
         {
+            var client = new MongoClient("mongodb://localhost:27017");
+            _database = client.GetDatabase("SvendDb");
+
             _users = _database.GetCollection<User>("Users");
             _comments = _database.GetCollection<Comment>("Users");
             _posts = _database.GetCollection<Post>("Posts");
-            var client = new MongoClient("mongodb://localhost:27017");
-            _database = client.GetDatabase("SvendDb");
         }
 
         // view comments for post
@@ -35,6 +36,25 @@ namespace SocialNetworkGruppe8.Services
             return user;
         }
 
+        public Post Create(Post post)
+        {
+            _posts.InsertOne(post);
+            // add to feed
+            return post;
+        }
+
+        public Comment Create(string postId, string commentText)
+        {
+            Comment comment = new Comment()
+            {
+                Text = commentText,
+                PostId = postId
+            };
+
+            _comments.InsertOne(comment);
+            return comment;
+        }
+
         public IEnumerable<Post> GetFeed(string loggedInUserId)
         {
             var user = _users.Find<User>(u => u.Id == loggedInUserId).FirstOrDefault();
@@ -44,22 +64,27 @@ namespace SocialNetworkGruppe8.Services
         public IEnumerable<Post> GetWall(string userId, string visitorId)
         {
             var user = _users.Find<User>(u => u.Id == userId).FirstOrDefault();
-            bool isVisitorInCircle = user.UserCircle.Any(v => v == visitorId);
+            if (user != null && user.UserCircle != null)
+            {
 
-            if (isVisitorInCircle)
-            {
-                return _posts.Find<Post>(p => p.UserId == userId).ToList();
+                bool isVisitorInCircle = (bool) user?.UserCircle?.Any(v => v == visitorId);
+
+                if (isVisitorInCircle)
+                {
+                    return _posts.Find<Post>(p => p.UserId == userId).ToList();
+                }
+                else
+                {
+                    return _posts.Find<Post>(p => p.UserId == userId && p.IsPublic).ToList();
+                }
             }
-            else
-            {
-                return _posts.Find<Post>(p => p.UserId == userId && p.IsPublic).ToList();
-            }
+            return new List<Post>();
         }
 
-        //public List<User> Get() // this is just made as a test. we should have this
-        //{
-        //    return _users.Find(book => true).ToList();
-        //}
+        public List<User> Get() // this is just made as a test. we should have this
+        {
+            return _users.Find(book => true).ToList();
+        }
 
         //public void Update(string id, Feed feedIn)
         //{
