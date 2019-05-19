@@ -23,30 +23,16 @@ namespace SocialNetworkGruppe8.Services
             _posts = _database.GetCollection<Post>("Posts");
         }
 
-        // view comments for post
-
-        //public Feed Get(string id)
-        //{
-        //    return _feed.Find<Feed>(feed=> feed.Id == id).FirstOrDefault();
-        //}
-
         public User Create(User user)
         {
             _users.InsertOne(user);
             return user;
         }
 
-        public User Update(string userId, User user)
-        {
-            _users.UpdateOne(u => userId == u.Id, new ObjectUpdateDefinition<User>(user));
-            return user;
-        }
-
-        //public Post Create(Post post)
+        //public User Update(string userId, User user)
         //{
-        //    _posts.InsertOne(post);
-        //    // add to feed
-        //    return post;
+        //    _users.UpdateOne(u => userId == u.Id, new ObjectUpdateDefinition<User>(user));
+        //    return user;
         //}
 
         public Comment Create(string postId, string commentText)
@@ -133,20 +119,5 @@ namespace SocialNetworkGruppe8.Services
         {
             return _users.Find(u => true).ToList();
         }
-
-        //public void Update(string id, Feed feedIn)
-        //{
-        //    _feed.ReplaceOne(feed => feed.Id == id, feedIn);
-        //}
-
-        //public void Remove(Feed feedIn)
-        //{
-        //    _feed.DeleteOne(feed => feed.Id == feedIn.Id);
-        //}
-
-        //public void Remove(string id)
-        //{
-        //    _feed.DeleteOne(feed => feed.Id == id);
-        //}
     }
 }
