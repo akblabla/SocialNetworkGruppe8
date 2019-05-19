@@ -15,6 +15,7 @@ namespace SocialNetworkGruppe8
             var u3 = new User() { UserCircle = new List<string>(), Name = "Silas" };
             var u4 = new User() { UserCircle = new List<string>(), Name = "Thor" };
 
+            s.Create(u1);
             s.Create(u2);
             s.Create(u3);
             var userList = new List<User>();
@@ -27,7 +28,7 @@ namespace SocialNetworkGruppe8
             u1.UserCircle.Add(userList.Where(u => u.Name == "Silas").FirstOrDefault().Id);
             u1.Followers.Add(userList.Where(u => u.Name == "Silas").FirstOrDefault().Id);
             u1.Followers.Add(userList.Where(u => u.Name == "Felix").FirstOrDefault().Id);
-            s.Create(u1);
+            s.Update(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, u1);
 
             //
             s.Create(userList.FirstOrDefault().Id, new Post() { IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id });

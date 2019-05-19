@@ -36,6 +36,12 @@ namespace SocialNetworkGruppe8.Services
             return user;
         }
 
+        public User Update(string userId, User user)
+        {
+            _users.UpdateOne(u => userId == u.Id, new ObjectUpdateDefinition<User>(user));
+            return user;
+        }
+
         //public Post Create(Post post)
         //{
         //    _posts.InsertOne(post);
@@ -72,7 +78,7 @@ namespace SocialNetworkGruppe8.Services
                         follower.Feed.Add(post);
                         if (follower.Feed.Count > 2)
                         {
-                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));//nope? should be post
                         }
                     }
                     else if (user.UserCircle.Any(id => id == follower.Id))
@@ -80,7 +86,7 @@ namespace SocialNetworkGruppe8.Services
                         follower.Feed.Add(post);
                         if (follower.Feed.Count > 2)
                         {
-                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));//nope? should be post
                         }
                     }
                 }
