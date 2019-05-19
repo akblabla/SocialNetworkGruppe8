@@ -19,7 +19,7 @@ namespace SocialNetworkGruppe8.Services
             _database = client.GetDatabase("SvendDb");
 
             _users = _database.GetCollection<User>("Users");
-            _comments = _database.GetCollection<Comment>("Users");
+            _comments = _database.GetCollection<Comment>("Comments");
             _posts = _database.GetCollection<Post>("Posts");
         }
 
