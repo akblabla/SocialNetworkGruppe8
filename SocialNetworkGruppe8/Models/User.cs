@@ -11,8 +11,12 @@ namespace SocialNetworkGruppe8.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public char Gender { get; set; }
         // other user info
-        public ICollection<string> UserSubscribers { get; set; } // string id or user
+        public ICollection<string> Followers { get; set; } // string id or user
+        public ICollection<string> BlockedUsers { get; set; } // string id or user
         public ICollection<string> UserCircle { get; set; } // string id or user
         public ICollection<Post> Feed { get; set; } // With max amount constraint!
 

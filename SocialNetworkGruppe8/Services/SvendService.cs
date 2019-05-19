@@ -60,10 +60,27 @@ namespace SocialNetworkGruppe8.Services
             _posts.InsertOne(post);
 
             var user = _users.Find<User>(u => u.Id == ownerId).FirstOrDefault();
-            foreach (var subscriberId in user.UserCircle)
+            foreach (var followerId in user.Followers)
             {
-                var sub = _users.Find<User>(u => u.Id == subscriberId).FirstOrDefault();
-                sub.Feed.Add(post);
+                if (post.IsPublic)
+                {
+                    var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
+                    follower.Feed.Add(post);
+                    if (follower.Feed.Count > 2)
+                    {
+                        _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                    }
+                }
+                else if (user.UserCircle.Any(id => id == followerId))
+                {
+                    var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
+                    follower.Feed.Add(post);
+                    if (follower.Feed.Count > 2)
+                    {
+                        _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                    }
+                }
+
             }
             return post;
         }

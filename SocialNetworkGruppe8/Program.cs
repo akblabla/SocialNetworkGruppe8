@@ -12,8 +12,15 @@ namespace SocialNetworkGruppe8
             var s = new SvendService();
             var u1 = new User() {UserCircle = new List<string>()};
             var u2 = new User() { UserCircle = new List<string>() };
+            var u3 = new User() { UserCircle = new List<string>() };
+
+            u1.UserCircle.Add(u3.Id);
+            u1.Followers.Add(u3.Id);
+            u1.Followers.Add(u2.Id);
+
             s.Create(u1);
             s.Create(u2);
+            s.Create(u3);
             var userList = new List<User>();
             foreach (var user in s.Get())
             {
@@ -21,8 +28,9 @@ namespace SocialNetworkGruppe8
                 userList.Add(user);
             }
 
-            s.Create(new Post() { IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id });
-            s.Create(new Post() { IsPublic = false, Text = "Private post", UserId = userList.FirstOrDefault().Id });
+            s.Create(userList.FirstOrDefault().Id, new Post() { IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id });
+            s.Create(userList.FirstOrDefault().Id, new Post() { IsPublic = false, Text = "Private post", UserId = userList.FirstOrDefault().Id });
+
 
             var postList = new List<Post>();
             foreach (var postAndcomments in s.GetWall(userList.FirstOrDefault().Id, userList.LastOrDefault().Id))
