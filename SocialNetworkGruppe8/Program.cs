@@ -31,25 +31,32 @@ namespace SocialNetworkGruppe8
             //service.Update(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, u1);
 
             //
-            service.Create(userList.FirstOrDefault().Id, new Post() { IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id });
-            service.Create(userList.FirstOrDefault().Id, new Post() { IsPublic = false, Text = "Private post", UserId = userList.FirstOrDefault().Id });
+            userList.Clear();
+            foreach (var user in service.Get())
+            {
+                Console.WriteLine(user.Name);
+                userList.Add(user);
+            }
+
+            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new Post() { IsPublic = true, Text = "Public post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
+            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new Post() { IsPublic = false, Text = "Private post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
 
 
             var postList = new List<Post>();
-            foreach (var postAndcomments in service.GetWall(userList.FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
+            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
             {
                 Console.WriteLine("Silas can see post: " + postAndcomments.Item1.Text);
                 postList.Add(postAndcomments.Item1);
             }
 
-            foreach (var postAndcomments in service.GetWall(userList.FirstOrDefault().Id, userList.Where(u => u.Name == "Felix").FirstOrDefault().Id))
+            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Felix").FirstOrDefault().Id))
             {
                 Console.WriteLine("Felix can see post: " + postAndcomments.Item1.Text);
                 postList.Add(postAndcomments.Item1);
             }
 
-            service.Create(postList.FirstOrDefault().Id, "My comment");
-            foreach (var postAndcomments in service.GetWall(userList.FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
+            service.Create(postList.FirstOrDefault().Id, new Comment() { Text = "My Comment"});
+            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
             {
 
                 foreach (var comment in postAndcomments.Item2)

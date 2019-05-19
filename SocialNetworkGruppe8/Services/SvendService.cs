@@ -35,14 +35,8 @@ namespace SocialNetworkGruppe8.Services
         //    return user;
         //}
 
-        public Comment Create(string postId, string commentText)
+        public Comment Create(string postId, Comment comment)
         {
-            Comment comment = new Comment()
-            {
-                Text = commentText,
-                PostId = postId
-            };
-
             _comments.InsertOne(comment);
             return comment;
         }
