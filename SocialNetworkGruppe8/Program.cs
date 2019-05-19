@@ -193,20 +193,22 @@ namespace SocialNetworkGruppe8
                 userList.Add(user);
             }
 
-            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new Post() { IsPublic = true, Text = "Public post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
-            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new Post() { IsPublic = false, Text = "Private post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
+            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new TextPost() { IsPublic = true, Text = "Public post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
+            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new PicturePost() { IsPublic = false, ImageUrl = "", Text = "Private post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
 
 
             var postList = new List<Post>();
             foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
             {
-                Console.WriteLine("Silas can see post: " + postAndcomments.Item1.Text);
-                postList.Add(postAndcomments.Item1);
+                TextPost post = postAndcomments.Item1 as TextPost;
+                Console.WriteLine("Silas can see post: " + post.Text);
+               postList.Add(postAndcomments.Item1);
             }
 
             foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Felix").FirstOrDefault().Id))
             {
-                Console.WriteLine("Felix can see post: " + postAndcomments.Item1.Text);
+                TextPost post = postAndcomments.Item1 as TextPost;
+                Console.WriteLine("Felix can see post: " + post.Text);
                 postList.Add(postAndcomments.Item1);
             }
 
