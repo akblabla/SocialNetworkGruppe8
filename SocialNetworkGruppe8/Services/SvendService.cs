@@ -15,16 +15,14 @@ namespace SocialNetworkGruppe8.Services
 
         public SvendService()
         {
+            _users = _database.GetCollection<User>("Users");
+            _comments = _database.GetCollection<Comment>("Users");
+            _posts = _database.GetCollection<Post>("Posts");
             var client = new MongoClient("mongodb://localhost:27017");
             _database = client.GetDatabase("SvendDb");
         }
 
         // view comments for post
-
-        public List<User> Get() // this is just made as a test. we should have this
-        {
-            return _users.Find(book => true).ToList();
-        }
 
         //public Feed Get(string id)
         //{
@@ -33,13 +31,35 @@ namespace SocialNetworkGruppe8.Services
 
         public User Create(User user)
         {
-            if (_users == null)
-            {
-                _users = _database.GetCollection<User>("Users");
-            }
             _users.InsertOne(user);
             return user;
         }
+
+        public IEnumerable<Post> GetFeed(string loggedInUserId)
+        {
+            var user = _users.Find<User>(u => u.Id == loggedInUserId).FirstOrDefault();
+            return user.Feed;
+        }
+
+        public IEnumerable<Post> GetWall(string userId, string visitorId)
+        {
+            var user = _users.Find<User>(u => u.Id == userId).FirstOrDefault();
+            bool isVisitorInCircle = user.UserCircle.Any(v => v == visitorId);
+
+            if (isVisitorInCircle)
+            {
+                return _posts.Find<Post>(p => p.UserId == userId).ToList();
+            }
+            else
+            {
+                return _posts.Find<Post>(p => p.UserId == userId && p.IsPublic).ToList();
+            }
+        }
+
+        //public List<User> Get() // this is just made as a test. we should have this
+        //{
+        //    return _users.Find(book => true).ToList();
+        //}
 
         //public void Update(string id, Feed feedIn)
         //{
