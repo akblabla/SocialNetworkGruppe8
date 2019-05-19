@@ -52,8 +52,12 @@ namespace SocialNetworkGruppe8.Services
                 var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
                 if (follower != null)
                 {
+                    if (user.BlockedUsers.Any(id => id == follower.Id))
+                    {
+                        break;
+                    }
 
-                    if (post.IsPublic)
+                    else if (post.IsPublic)
                     {
                         follower.Feed.Add(post);
                         if (follower.Feed.Count > 2)
@@ -78,6 +82,9 @@ namespace SocialNetworkGruppe8.Services
         public IEnumerable<Tuple<Post, IEnumerable<Comment>>> GetWall(string userId, string visitorId)
         {
             var user = _users.Find<User>(u => u.Id == userId).FirstOrDefault();
+            
+           // if(user)
+            
             if (user != null && user.UserCircle != null)
             {
 
