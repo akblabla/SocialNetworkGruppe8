@@ -21,12 +21,24 @@ namespace SocialNetworkGruppe8
                 userList.Add(user);
             }
 
-            s.Create(new Post() {IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id});
-            s.Create(new Post() {IsPublic = false, Text = "Private post", UserId = userList.FirstOrDefault().Id});
+            s.Create(new Post() { IsPublic = true, Text = "Public post", UserId = userList.FirstOrDefault().Id });
+            s.Create(new Post() { IsPublic = false, Text = "Private post", UserId = userList.FirstOrDefault().Id });
 
-            foreach (var post in s.GetWall(userList.FirstOrDefault().Id, userList.LastOrDefault().Id))
+            var postList = new List<Post>();
+            foreach (var postAndcomments in s.GetWall(userList.FirstOrDefault().Id, userList.LastOrDefault().Id))
             {
-                Console.WriteLine(post.Text);
+                Console.WriteLine(postAndcomments.Item1.Text);
+                postList.Add(postAndcomments.Item1);
+            }
+
+            s.Create(postList.FirstOrDefault().Id, "My comment");
+            foreach (var postAndcomments in s.GetWall(userList.FirstOrDefault().Id, userList.LastOrDefault().Id))
+            {
+
+                foreach (var comment in postAndcomments.Item2)
+                {
+                    Console.WriteLine(comment.Text);
+                }
             }
 
             Console.ReadKey();

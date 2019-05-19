@@ -36,12 +36,12 @@ namespace SocialNetworkGruppe8.Services
             return user;
         }
 
-        public Post Create(Post post)
-        {
-            _posts.InsertOne(post);
-            // add to feed
-            return post;
-        }
+        //public Post Create(Post post)
+        //{
+        //    _posts.InsertOne(post);
+        //    // add to feed
+        //    return post;
+        //}
 
         public Comment Create(string postId, string commentText)
         {
@@ -55,35 +55,56 @@ namespace SocialNetworkGruppe8.Services
             return comment;
         }
 
-        public IEnumerable<Post> GetFeed(string loggedInUserId)
+        public Post Create(string ownerId, Post post)
         {
-            var user = _users.Find<User>(u => u.Id == loggedInUserId).FirstOrDefault();
-            return user.Feed;
+            _posts.InsertOne(post);
+
+            var user = _users.Find<User>(u => u.Id == ownerId).FirstOrDefault();
+            foreach (var subscriberId in user.UserCircle)
+            {
+                var sub = _users.Find<User>(u => u.Id == subscriberId).FirstOrDefault();
+                sub.Feed.Add(post);
+            }
+            return post;
         }
 
-        public IEnumerable<Post> GetWall(string userId, string visitorId)
+        public IEnumerable<Tuple<Post, IEnumerable<Comment>>> GetWall(string userId, string visitorId)
         {
             var user = _users.Find<User>(u => u.Id == userId).FirstOrDefault();
             if (user != null && user.UserCircle != null)
             {
 
-                bool isVisitorInCircle = (bool) user?.UserCircle?.Any(v => v == visitorId);
+                bool isVisitorInCircle = (bool)user?.UserCircle?.Any(v => v == visitorId);
 
                 if (isVisitorInCircle)
                 {
-                    return _posts.Find<Post>(p => p.UserId == userId).ToList();
+                    var posts = _posts.Find<Post>(p => p.UserId == userId).ToList();
+                    var result = new List<Tuple<Post, IEnumerable<Comment>>>();
+                    foreach (var post in posts)
+                    {
+                        var comments = _comments.Find<Comment>(c => c.PostId == post.Id).ToList();
+                        result.Add(new Tuple<Post, IEnumerable<Comment>>(post, comments));
+                    }
+                    return result;
                 }
                 else
                 {
-                    return _posts.Find<Post>(p => p.UserId == userId && p.IsPublic).ToList();
+                    var posts = _posts.Find<Post>(p => p.UserId == userId && p.IsPublic).ToList();
+                    var result = new List<Tuple<Post, IEnumerable<Comment>>>();
+                    foreach (var post in posts)
+                    {
+                        var comments = _comments.Find<Comment>(c => c.PostId == post.Id).ToList();
+                        result.Add(new Tuple<Post, IEnumerable<Comment>>(post, comments));
+                    }
+                    return result;
                 }
             }
-            return new List<Post>();
+            return new List<Tuple<Post, IEnumerable<Comment>>> ();
         }
 
         public List<User> Get() // this is just made as a test. we should have this
         {
-            return _users.Find(book => true).ToList();
+            return _users.Find(u => true).ToList();
         }
 
         //public void Update(string id, Feed feedIn)
