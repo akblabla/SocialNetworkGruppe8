@@ -14,5 +14,6 @@ namespace SocialNetworkGruppe8.Models
         public string UserId { get; set; }
         public string Text { get; set; }
         public bool IsPublic { get; set; }
+        public DateTime CreationDate { get; set; }
     }
 }
