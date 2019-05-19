@@ -8,6 +8,15 @@ namespace SocialNetworkGruppe8.Models
 {
     public class User
     {
+        public User()
+        {
+            Followers = new List<string>();
+            UserCircle = new List<string>();
+            BlockedUsers = new List<string>();
+            Feed = new List<Post>();
+
+        }
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

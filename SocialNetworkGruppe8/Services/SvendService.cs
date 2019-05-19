@@ -59,25 +59,29 @@ namespace SocialNetworkGruppe8.Services
         {
             _posts.InsertOne(post);
 
+
             var user = _users.Find<User>(u => u.Id == ownerId).FirstOrDefault();
             foreach (var followerId in user.Followers)
             {
-                if (post.IsPublic)
+                var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
+                if (follower != null)
                 {
-                    var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
-                    follower.Feed.Add(post);
-                    if (follower.Feed.Count > 2)
+
+                    if (post.IsPublic)
                     {
-                        _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                        follower.Feed.Add(post);
+                        if (follower.Feed.Count > 2)
+                        {
+                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                        }
                     }
-                }
-                else if (user.UserCircle.Any(id => id == followerId))
-                {
-                    var follower = _users.Find<User>(u => u.Id == followerId).FirstOrDefault();
-                    follower.Feed.Add(post);
-                    if (follower.Feed.Count > 2)
+                    else if (user.UserCircle.Any(id => id == follower.Id))
                     {
-                        _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                        follower.Feed.Add(post);
+                        if (follower.Feed.Count > 2)
+                        {
+                            _users.UpdateOne(u => follower.Id == u.Id, new ObjectUpdateDefinition<User>(follower));
+                        }
                     }
                 }
 
@@ -116,7 +120,7 @@ namespace SocialNetworkGruppe8.Services
                     return result;
                 }
             }
-            return new List<Tuple<Post, IEnumerable<Comment>>> ();
+            return new List<Tuple<Post, IEnumerable<Comment>>>();
         }
 
         public List<User> Get() // this is just made as a test. we should have this
