@@ -108,7 +108,7 @@ namespace SocialNetworkGruppe8.Services
                     {
                         if (user.BlockedUsers.Any(id => id == visitor.Id))
                         {
-                            continue;
+                            break;
                         }
                         var comments = _comments.Find<Comment>(c => c.PostId == post.Id).ToList();
                         result.Add(new Tuple<Post, IEnumerable<Comment>>(post, comments));
