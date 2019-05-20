@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using SocialNetworkGruppe8.Models;
 namespace SocialNetworkGruppe8.Models
 {
-    public abstract class Post
+    public class Post
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

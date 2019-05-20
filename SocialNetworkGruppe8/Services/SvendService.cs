@@ -31,7 +31,7 @@ namespace SocialNetworkGruppe8.Services
 
         //public User Update(string userId, User user)
         //{
-        //    _users.UpdateOne(u => userId == u.Id, new ObjectUpdateDefinition<User>(user));
+        //   _users.UpdateOne(u => userId == u.Id, new ObjectUpdateDefinition<User>(user));
         //    return user;
         //}
 
@@ -54,7 +54,7 @@ namespace SocialNetworkGruppe8.Services
                 {
                     if (user.BlockedUsers.Any(id => id == follower.Id))
                     {
-                        break;
+                        continue;
                     }
 
                     else if (post.IsPublic)
@@ -121,6 +121,11 @@ namespace SocialNetworkGruppe8.Services
                 }
             }
             return new List<Tuple<Post, IEnumerable<Comment>>>();
+        }
+
+        public List<Post> GetPost() // this is just made as a test. we should have this
+        {
+            return _posts.Find(u => true).ToList();
         }
 
         public List<User> Get() // this is just made as a test. we should have this

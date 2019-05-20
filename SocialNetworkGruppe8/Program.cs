@@ -17,13 +17,10 @@ namespace SocialNetworkGruppe8
             Console.WriteLine("Wellcome to the SvendDB console interface");
             Console.WriteLine("Your choice of commands are:" +
                               "\n\"1\" : Create user" +
-                              "\n\"2\" : Have a user follow another user" +
-                              "\n\"3\" : Have a user block another user" +
-                              "\n\"4\" : Have a user add anther user to its cirkles" +
-                              "\n\"5\" : Have a user create a post" +
-                              "\n\"6\" : Have a user create a comment to a post" +
-                              "\n\"7\" : Have a user get another users wall" +
-                              "\n\"8\" : Have a user get its feed");
+                              "\n\"2\" : Have a user create a post" +
+                              "\n\"3\" : Have a user create a comment to a post" +
+                              "\n\"4\" : Have a user get another users wall" +
+                              "\n\"5\" : Have a user get its feed");
             do
             {
                 try
@@ -39,50 +36,65 @@ namespace SocialNetworkGruppe8
                             char gender = Convert.ToChar(Console.ReadLine());
                             Console.WriteLine("What is the users age?");
                             int age = Convert.ToInt32(Console.ReadLine());
-                            var userInTheMaking = new User() { UserCircle = new List<string>(), Name = name, Gender = gender, Age = age };
+
+                            var userInTheMaking = new User()
+                            {
+                                Name = name,
+                                Gender = gender,
+                                Age = age
+                            };
+
+                            Console.WriteLine("how many follows this user?");
+                            int forLoop = Convert.ToInt32(Console.ReadLine());
+
+                            for (int i = 0; i < forLoop; i++)
+                            {
+                                Console.WriteLine("What is the name of a follower?");
+                                var ToBeFollower = Console.ReadLine();
+                                userList = service.Get();
+                                userInTheMaking.Followers.Add(userList.Where(u => u.Name == ToBeFollower).FirstOrDefault().Id);
+                                Console.WriteLine("Added!");
+                            }
+
+                            Console.WriteLine("how many have this user blocked?");
+                            forLoop = Convert.ToInt32(Console.ReadLine());
+
+                            for (int i = 0; i < forLoop; i++)
+                            {
+                                Console.WriteLine("What is the name of a blocked user?");
+                                var ToBeFollower = Console.ReadLine();
+                                userList = service.Get();
+                                userInTheMaking.BlockedUsers.Add(userList.Where(u => u.Name == ToBeFollower).FirstOrDefault().Id);
+                                Console.WriteLine("Added!");
+                            }
+
+                            Console.WriteLine("how many are in this users cirkles?");
+                            forLoop = Convert.ToInt32(Console.ReadLine());
+
+                            for (int i = 0; i < forLoop; i++)
+                            {
+                                Console.WriteLine("What is the name of a follower?");
+                                var ToBeFollower = Console.ReadLine();
+                                userList = service.Get();
+                                userInTheMaking.UserCircle.Add(userList.Where(u => u.Name == ToBeFollower).FirstOrDefault().Id);
+                                Console.WriteLine("Added!");
+                            }
+
                             service.Create(userInTheMaking);
+                            Console.WriteLine("Done!");
                             break;
 
                         case "2":
-                            Console.WriteLine("What is the name of the user who wants to follow someone?");
-                            string followerName = Console.ReadLine();
-                            Console.WriteLine("What is the name of the user that is to be followed?");
-                            string followedName = Console.ReadLine();
-
-                            User UserToBeFollowed = new User();
-                            isInThere = false;
-                            foreach (var user in service.Get())
-                            {
-                                if (user.Name == followedName)
-                                {
-                                    UserToBeFollowed = user;
-                                    isInThere = true;
-                                    break;
-                                }
-                            }
-
-                            if (!isInThere)
-                            {
-                                Console.WriteLine("User does not exist!");
-                                break;
-                            }
-                            isInThere = false;
-                            UserToBeFollowed.Followers.Add(userList.Where(u => u.Name == followerName).FirstOrDefault().Id);
-                            break;
+                            Console.WriteLine("What is the name of the user that is going to create a post?");
+                            string postAuthor = Console.ReadLine();
                             
-                        case "3":
-                            Console.WriteLine("What is the name of the user who wants to block someone?");
-                            string blockerName = Console.ReadLine();
-                            Console.WriteLine("What is the name of the user that is to be blocked?");
-                            string blockededName = Console.ReadLine();
-
-                            User UserToBlock = new User();
+                            User ToBePostAuthor = new User();
                             isInThere = false;
                             foreach (var user in service.Get())
                             {
-                                if (user.Name == blockerName)
+                                if (user.Name == postAuthor)
                                 {
-                                    UserToBlock = user;
+                                    ToBePostAuthor = user;
                                     isInThere = true;
                                     break;
                                 }
@@ -94,23 +106,206 @@ namespace SocialNetworkGruppe8
                                 break;
                             }
                             isInThere = false;
-                            UserToBlock.BlockedUsers.Add(userList.Where(u => u.Name == blockededName).FirstOrDefault().Id);
+
+
+                            bool notdone = true;
+                            bool isPrivate = false;
+                            while (notdone)
+                            {
+                                Console.WriteLine("Is the post going to be public or private?");
+                                string input = Console.ReadLine();
+                                if (input == "public")
+                                {
+                                    isPrivate = false;
+                                    notdone = false;
+                                }
+                                else if (input == "private")
+                                {
+                                    isPrivate = true;
+                                    notdone = false;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Try again");
+                                }
+                            }
+
+                            notdone = true;
+                            while (notdone)
+                            {
+                                Console.WriteLine("Is the post type text or picture?");
+                                string input = Console.ReadLine();
+                                if (input == "text")
+                                {
+                                    Console.WriteLine("What is the text in the post?");
+                                    input = Console.ReadLine();
+
+                                    TextPost thePost = new TextPost()
+                                    {
+                                        UserId = ToBePostAuthor.Id,
+                                        Author = postAuthor,
+                                        IsPublic = !isPrivate,
+                                        CreationDate = DateTime.Now,
+                                        Text = input
+                                    };
+                                    service.Create(ToBePostAuthor.Id, thePost);
+
+                                    notdone = false;
+                                }
+                                else if (input == "picture")
+                                {
+                                    Console.WriteLine("What is the text in the post?");
+                                    string textInput = Console.ReadLine();
+                                    Console.WriteLine("What is the URL for the picture in the post?");
+                                    string picInput = Console.ReadLine();
+                                    PicturePost thePost = new PicturePost()
+                                    {
+                                        UserId = ToBePostAuthor.Id,
+                                        Author = postAuthor,
+                                        IsPublic = !isPrivate,
+                                        CreationDate = DateTime.Now,
+                                        Text = input,
+                                        ImageUrl = picInput
+                                    };
+                                    service.Create(ToBePostAuthor.Id, thePost);
+                                    notdone = false;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Try again");
+                                }
+                            }
+                            Console.WriteLine("Done!");
+                            break;
+
+                        case "3":
+
+                            Console.WriteLine("What is the name of the user that is going to create a comment?");
+                            string commentAuthor = Console.ReadLine();
+                            
+                            User ToBeCommentAuthor = new User();
+                            isInThere = false;
+                            foreach (var user in service.Get())
+                            {
+                                if (user.Name == commentAuthor)
+                                {
+                                    ToBeCommentAuthor = user;
+                                    isInThere = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isInThere)
+                            {
+                                Console.WriteLine("User does not exist!");
+                                break;
+                            }
+                            isInThere = false;
+
+                            Console.WriteLine("What is the author of the post that is going to have a comment?");
+                            string postauthor = Console.ReadLine();
+                             
+                            User ToBePostAuthorer = new User();
+                            isInThere = false;
+                            foreach (var user in service.Get())
+                            {
+                                if (user.Name == postauthor)
+                                {
+                                    ToBePostAuthorer = user;
+                                    isInThere = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isInThere)
+                            {
+                                Console.WriteLine("User does not exist!");
+                                break;
+                            }
+                            isInThere = false;
+
+                            Console.WriteLine("Is the post text or picture?");
+                            string type = Console.ReadLine();
+
+                            if (type == "text")
+                            {
+                                TextPost ourpost = new TextPost();
+                                isInThere = false;
+                                foreach (var post in service.GetPost())
+                                {
+                                    if (post.Author == postauthor)
+                                    {
+                                        ourpost = (TextPost)post;
+                                        isInThere = true;
+                                        break;
+                                    }
+                                }
+                                if (!isInThere)
+                                {
+                                    Console.WriteLine("Post does not exist!");
+                                    break;
+                                }
+                                isInThere = false;
+
+                                Console.WriteLine("What is the comment text?");
+                                string content = Console.ReadLine();
+
+                                Comment ourComment = new Comment()
+                                {
+                                    Text = content,
+                                    PostId = ourpost.Id,
+                                    UserId = ToBePostAuthorer.Id
+                                };
+
+                                service.Create(ourpost.Id, ourComment);
+                            }
+                            else if (type == "picture")
+                            {
+                                PicturePost ourpost = new PicturePost();
+                                isInThere = false;
+                                foreach (var post in service.GetPost())
+                                {
+                                    if (post.Author == postauthor)
+                                    {
+                                        ourpost = (PicturePost)post;
+                                        isInThere = true;
+                                        break;
+                                    }
+                                }
+                                if (!isInThere)
+                                {
+                                    Console.WriteLine("Post does not exist!");
+                                    break;
+                                }
+                                isInThere = false;
+
+                                Console.WriteLine("What is the comment text?");
+                                string content = Console.ReadLine();
+
+                                Comment ourComment = new Comment()
+                                {
+                                    Text = content,
+                                    PostId = ourpost.Id,
+                                    UserId = ToBePostAuthorer.Id
+                                };
+
+                                service.Create(ourpost.Id, ourComment);
+                            }
+                            Console.WriteLine("Done!");
                             break;
 
                         case "4":
-                            Console.WriteLine("What is the name of the user who wants add someone to its cirkle?");
-                            string CirkleOwnerName = Console.ReadLine();
-                            Console.WriteLine("What is the name of the user that is to be added?");
-                            string SoonToBeInCirkleName = Console.ReadLine();
-                            userList = service.Get();
+                             
+                            Console.WriteLine("What is the user that is getting another users wall?");
+                            string wallWanter = Console.ReadLine();
                             
-                            User UserToAddToCirkle = new User();
+                            User ToBewallWanter = new User();
                             isInThere = false;
                             foreach (var user in service.Get())
                             {
-                                if (user.Name == CirkleOwnerName)
+                                if (user.Name == wallWanter)
                                 {
-                                    UserToAddToCirkle = user;
+                                    ToBewallWanter = user;
                                     isInThere = true;
                                     break;
                                 }
@@ -122,30 +317,80 @@ namespace SocialNetworkGruppe8
                                 break;
                             }
                             isInThere = false;
-                            UserToAddToCirkle.UserCircle.Add(userList.Where(u => u.Name == SoonToBeInCirkleName).FirstOrDefault().Id);
+
+                            Console.WriteLine("What is the user whose wall we are going to get?");
+                            string wallOwner = Console.ReadLine();
+                            
+                            User ToBewallOwner = new User();
+                            isInThere = false;
+                            foreach (var user in service.Get())
+                            {
+                                if (user.Name == wallOwner)
+                                {
+                                    ToBewallOwner = user;
+                                    isInThere = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isInThere)
+                            {
+                                Console.WriteLine("User does not exist!");
+                                break;
+                            }
+                            isInThere = false;
+
+                            IEnumerable<Tuple<Post, IEnumerable<Comment>>> wall = service.GetWall(ToBewallOwner.Id, ToBewallWanter.Id);
+                            foreach (var instance in wall)
+                            {
+                                Console.WriteLine("Post created at " + instance.Item1.CreationDate + " by " + instance.Item1.Author + " can be seen");
+                                Console.WriteLine("With the comment(s):");
+                                foreach (var comment in instance.Item2)
+                                {
+                                    Console.WriteLine(comment.Text);
+                                }
+                            }  
+
                             break;
 
                         case "5":
-                            Console.WriteLine("What is the name of the user that is going to create a post?");
-                            string post = Console.ReadLine();
+                            
+                            Console.WriteLine("What is the user whose feed we are going to see?");
+                            string FeedOwner = Console.ReadLine();
+                            
+                            User ToBeFeedOwner = new User();
+                            isInThere = false;
+                            foreach (var user in service.Get())
+                            {
+                                if (user.Name == FeedOwner)
+                                {
+                                    ToBeFeedOwner = user;
+                                    isInThere = true;
+                                    break;
+                                }
+                            }
 
+                            if (!isInThere)
+                            {
+                                Console.WriteLine("User does not exist!");
+                                break;
+                            }
+                            isInThere = false;
 
-                            break;
+                            foreach (var post in ToBeFeedOwner.Feed)
+                            {
+                                Console.WriteLine("Post created at " + post.CreationDate + " by " + post.Author + " can be seen");
+                            }
 
-                        case "6":
-                            break;
-
-                        case "7":
-                            break;
-
-                        case "8":
                             break;
 
                         default:
                             Console.WriteLine("Unknown command");
                             break;
+
                     }
                 }
+
                 catch (Exception e)
                 {
                     Console.WriteLine("Invalid database request" +
@@ -163,67 +408,6 @@ namespace SocialNetworkGruppe8
                 }
 
             } while (true);
-            /*
-            var service = new SvendService();
-            var u1 = new User() {UserCircle = new List<string>(), Name = "Peter"};
-            var u2 = new User() { UserCircle = new List<string>(), Name = "Felix"};
-            var u3 = new User() { UserCircle = new List<string>(), Name = "Silas" };
-            var u4 = new User() { UserCircle = new List<string>(), Name = "Thor" };
-
-            service.Create(u2);
-            service.Create(u3);
-            var userList = new List<User>();
-            foreach (var user in service.Get())
-            {
-                Console.WriteLine(user.Name);
-                userList.Add(user);
-            }
-
-            u1.UserCircle.Add(userList.Where(u => u.Name == "Silas").FirstOrDefault().Id);
-            u1.Followers.Add(userList.Where(u => u.Name == "Silas").FirstOrDefault().Id);
-            u1.Followers.Add(userList.Where(u => u.Name == "Felix").FirstOrDefault().Id);
-            service.Create(u1);
-            //service.Update(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, u1);
-
-            //
-            userList.Clear();
-            foreach (var user in service.Get())
-            {
-                Console.WriteLine(user.Name);
-                userList.Add(user);
-            }
-
-            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new TextPost() { IsPublic = true, Text = "Public post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
-            service.Create(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, new PicturePost() { IsPublic = false, ImageUrl = "", Text = "Private post", UserId = userList.Where(u => u.Name == "Peter").FirstOrDefault().Id });
-
-
-            var postList = new List<Post>();
-            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
-            {
-                TextPost post = postAndcomments.Item1 as TextPost;
-                Console.WriteLine("Silas can see post: " + post.Text);
-               postList.Add(postAndcomments.Item1);
-            }
-
-            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Felix").FirstOrDefault().Id))
-            {
-                TextPost post = postAndcomments.Item1 as TextPost;
-                Console.WriteLine("Felix can see post: " + post.Text);
-                postList.Add(postAndcomments.Item1);
-            }
-
-            service.Create(postList.FirstOrDefault().Id, new Comment() { Text = "My Comment"});
-            foreach (var postAndcomments in service.GetWall(userList.Where(u => u.Name == "Peter").FirstOrDefault().Id, userList.Where(u => u.Name == "Silas").FirstOrDefault().Id))
-            {
-
-                foreach (var comment in postAndcomments.Item2)
-                {
-                    Console.WriteLine("Silas can see comments for post: " + comment.Text);
-                }
-            }
-
-            Console.ReadKey();
-            */
         }
     }
 }
