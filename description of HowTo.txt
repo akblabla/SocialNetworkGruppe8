@@ -1,0 +1,10 @@
+To use this project, simply run it, and follow the console promts.
+Note, that it is very possible to break the console application by writing wrong commands at certain times.
+
+There are 2 weird quirks to using the console.
+
+1 You need to make a follower before a publisher with followers
+
+2 you can only find the youngest post of an post author when you want to make a comment to a post.
+
+These are both because the model layer did not support how it would realisticly be done, but because of time pressure and the fact that we still do the mandatory Querying
